@@ -34,18 +34,27 @@ public class VzFollowClient implements ClientModInitializer {
     private static final long MSG_COOLDOWN_MS = 1500;
 
     // Zoom tunables (OptiFine-style hold-to-zoom)
-    private static final double ZOOM_FOV_FACTOR = 0.25;          // ~4x zoom (FOV shrinks to 1/4)
+    private static final double ZOOM_FOV_FACTOR = 0.25;          // FOV multiplier while zoomed (~4x, like OptiFine)
     private static final double ZOOM_SENSITIVITY_FACTOR = 0.4;   // slower look while zoomed = finer aim
 
     private boolean following = false;
     private long lastMsgAt = 0L;
     private KeyBinding toggleKey;
 
-    // Zoom state
+    // Zoom state. `zooming` is read by GameRendererZoomMixin (same client/render thread).
     private KeyBinding zoomKey;
-    private boolean zoomActive = false;
-    private int savedFov;
+    private static volatile boolean zooming = false;
     private double savedSensitivity;
+
+    /** Whether the zoom key is currently held (read by the GameRenderer mixin). */
+    public static boolean isZooming() {
+        return zooming;
+    }
+
+    /** How much to multiply the rendered FOV by while zooming (smaller = stronger zoom). */
+    public static double zoomFovMultiplier() {
+        return ZOOM_FOV_FACTOR;
+    }
 
     @Override
     public void onInitializeClient() {
@@ -76,23 +85,21 @@ public class VzFollowClient implements ClientModInitializer {
     }
 
     /**
-     * OptiFine-style hold-to-zoom. While the zoom key is held, shrink the field of view
-     * (and lower look sensitivity for finer aim), then restore both on release.
-     * FOV is purely client-side, so this only changes how YOU see the world.
+     * OptiFine-style hold-to-zoom. The actual FOV is scaled in {@code GameRendererZoomMixin}
+     * (which bypasses the vanilla 30-degree FOV-option floor, so the zoom is as strong as
+     * OptiFine's). Here we just flip the {@code zooming} flag and lower look sensitivity for
+     * finer aim, restoring it on release. FOV is purely client-side — this only changes how
+     * YOU see the world.
      */
     private void handleZoom(MinecraftClient mc) {
         boolean wantZoom = zoomKey.isPressed() && mc.player != null && mc.currentScreen == null;
-        if (wantZoom && !zoomActive) {
-            savedFov = mc.options.getFov().getValue();
+        if (wantZoom && !zooming) {
             savedSensitivity = mc.options.getMouseSensitivity().getValue();
-            int zoomFov = Math.max(1, (int) Math.round(savedFov * ZOOM_FOV_FACTOR));
-            mc.options.getFov().setValue(zoomFov);
             mc.options.getMouseSensitivity().setValue(savedSensitivity * ZOOM_SENSITIVITY_FACTOR);
-            zoomActive = true;
-        } else if (!wantZoom && zoomActive) {
-            mc.options.getFov().setValue(savedFov);
+            zooming = true;
+        } else if (!wantZoom && zooming) {
             mc.options.getMouseSensitivity().setValue(savedSensitivity);
-            zoomActive = false;
+            zooming = false;
         }
     }
 

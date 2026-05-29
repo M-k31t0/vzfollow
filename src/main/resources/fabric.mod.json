@@ -10,6 +10,9 @@
   "entrypoints": {
     "client": ["com.vz.follow.VzFollowClient"]
   },
+  "mixins": [
+    "vzfollow.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.19.0",
     "minecraft": "~1.21.11",

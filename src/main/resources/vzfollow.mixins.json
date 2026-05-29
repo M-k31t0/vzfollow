@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.vz.follow.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "GameRendererZoomMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
