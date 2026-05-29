@@ -3,7 +3,7 @@
   "id": "vzfollow",
   "version": "${version}",
   "name": "VZ Follow",
-  "description": "Press a key to auto-follow the nearest player. Cliff/height safe mode and 1-block auto-jump.",
+  "description": "Press a key to auto-follow the nearest player (cliff/hazard-safe, 1-block auto-jump). Hold C for an OptiFine-style zoom.",
   "authors": ["vz"],
   "license": "MIT",
   "environment": "client",

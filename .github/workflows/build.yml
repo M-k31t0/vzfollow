@@ -30,6 +30,10 @@ jobs:
       - name: List build output
         run: ls -la build/libs
 
+      - name: Read mod version
+        id: ver
+        run: echo "version=$(grep '^mod_version=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+
       - name: Upload jar artifact
         uses: actions/upload-artifact@v4
         with:
@@ -39,19 +43,20 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.0
-          name: VZ Follow v1.0.0
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: VZ Follow v${{ steps.ver.outputs.version }}
           body: |
             VZ Follow — クライアント側 Fabric Mod (Minecraft 1.21.11)
 
-            Rキーで最寄りのプレイヤーを自動追尾します。崖/溶岩/水/火を検知して停止し、1ブロックの段差は自動ジャンプします。
+            - **R キー**: 最寄りのプレイヤーを自動追尾（崖/溶岩/水/火を検知して停止、1ブロックの段差は自動ジャンプ）
+            - **C キー（押している間）**: OptiFine風のズーム。視野角を狭めて拡大表示し、狙いやすいようマウス感度も自動で下げます
 
             ## 導入方法
             1. Fabric Loader (Minecraft 1.21.11 用) を導入
             2. Fabric API を `mods` フォルダに入れる
-            3. 下の `vzfollow-1.0.0.jar` を `mods` フォルダに入れる
-            4. ゲーム内のキー設定で「追尾の切り替え」(初期: R) を確認
+            3. 下の `vzfollow-${{ steps.ver.outputs.version }}.jar` を `mods` フォルダに入れる
+            4. ゲーム内のキー設定で「追尾の切り替え」(初期: R) と「ズーム」(初期: C) を確認
 
-            クライアント専用Modです。サーバーには不要です。
-          files: build/libs/vzfollow-*.jar
+            クライアント専用Modです（マルチサーバーでもそのまま使えます）。各自が自分のクライアントに入れてください。
+          files: build/libs/vzfollow-${{ steps.ver.outputs.version }}.jar
           fail_on_unmatched_files: true

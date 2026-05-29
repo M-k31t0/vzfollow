@@ -1,5 +1,6 @@
 {
   "key.category.vzfollow.general": "VZ 追尾",
   "key.categories.vzfollow.general": "VZ 追尾",
-  "key.vzfollow.toggle": "最寄りプレイヤーの追尾を切替"
+  "key.vzfollow.toggle": "最寄りプレイヤーの追尾を切替",
+  "key.vzfollow.zoom": "ズーム（押している間）"
 }

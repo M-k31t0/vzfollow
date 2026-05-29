@@ -1,5 +1,6 @@
 {
   "key.category.vzfollow.general": "VZ Follow",
   "key.categories.vzfollow.general": "VZ Follow",
-  "key.vzfollow.toggle": "Toggle follow nearest player"
+  "key.vzfollow.toggle": "Toggle follow nearest player",
+  "key.vzfollow.zoom": "Zoom (hold)"
 }
